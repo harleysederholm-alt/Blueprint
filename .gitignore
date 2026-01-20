@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+ENV/
+.eggs/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Node
+node_modules/
+.npm
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.nyc_output/
+coverage/
+
+# Logs
+*.log
+logs/
+
+# Temporary
+tmp/
+temp/
+*.tmp
+
+# Analysis artifacts (temporary cloned repos)
+.analysis_cache/
+.repos/
