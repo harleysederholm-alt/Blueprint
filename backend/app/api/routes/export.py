@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from io import BytesIO
 
 from app.core.export_engine import ExportEngine, ExportOptions
-from app.api.routes.analyze import _analysis_results  # Import the results store
+from app.api.routes.analyze import analysis_store  # Import the results store
 
 logger = logging.getLogger(__name__)
 
@@ -42,10 +42,10 @@ async def export_analysis(request: ExportRequest):
     - json: Raw JSON data
     """
     # Get analysis result
-    if request.analysis_id not in _analysis_results:
+    if request.analysis_id not in analysis_store:
         raise HTTPException(status_code=404, detail="Analysis not found")
     
-    result = _analysis_results[request.analysis_id]
+    result = analysis_store[request.analysis_id]
     
     if result.get("status") != "completed":
         raise HTTPException(
@@ -93,10 +93,10 @@ async def export_analysis_markdown(
     include_evidence: bool = True,
 ):
     """Quick endpoint to export as Markdown."""
-    if analysis_id not in _analysis_results:
+    if analysis_id not in analysis_store:
         raise HTTPException(status_code=404, detail="Analysis not found")
     
-    result = _analysis_results[analysis_id]
+    result = analysis_store[analysis_id]
     
     if result.get("status") != "completed":
         raise HTTPException(status_code=400, detail="Analysis not ready")
@@ -122,10 +122,10 @@ async def export_analysis_markdown(
 @router.get("/analysis/{analysis_id}/html")
 async def export_analysis_html(analysis_id: str):
     """Quick endpoint to export as HTML."""
-    if analysis_id not in _analysis_results:
+    if analysis_id not in analysis_store:
         raise HTTPException(status_code=404, detail="Analysis not found")
     
-    result = _analysis_results[analysis_id]
+    result = analysis_store[analysis_id]
     
     if result.get("status") != "completed":
         raise HTTPException(status_code=400, detail="Analysis not ready")
@@ -145,10 +145,10 @@ async def export_analysis_html(analysis_id: str):
 @router.get("/analysis/{analysis_id}/json")
 async def export_analysis_json(analysis_id: str):
     """Quick endpoint to export as JSON."""
-    if analysis_id not in _analysis_results:
+    if analysis_id not in analysis_store:
         raise HTTPException(status_code=404, detail="Analysis not found")
     
-    result = _analysis_results[analysis_id]
+    result = analysis_store[analysis_id]
     
     if result.get("status") != "completed":
         raise HTTPException(status_code=400, detail="Analysis not ready")

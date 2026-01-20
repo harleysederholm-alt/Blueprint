@@ -4,8 +4,9 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 
 const inter = Inter({
-  variable: "--font-inter",
   subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -20,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.variable} font-sans antialiased bg-slate-950 text-slate-50`}>
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans antialiased text-body min-h-screen selection:bg-indigo-500/30 selection:text-indigo-200`} suppressHydrationWarning>
         <Providers>
           {children}
         </Providers>

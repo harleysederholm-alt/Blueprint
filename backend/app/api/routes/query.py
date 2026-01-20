@@ -11,7 +11,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.core.query_engine import KnowledgeGraphQueryEngine, QueryResult
-from app.api.routes.analyze import _analysis_results
+from app.api.routes.analyze import analysis_store
 
 logger = logging.getLogger(__name__)
 
@@ -52,10 +52,10 @@ async def query_knowledge_graph(request: QueryRequest):
     - "Find coupling hotspots"
     """
     # Check if analysis exists
-    if request.analysis_id not in _analysis_results:
+    if request.analysis_id not in analysis_store:
         raise HTTPException(status_code=404, detail="Analysis not found")
     
-    result = _analysis_results[request.analysis_id]
+    result = analysis_store[request.analysis_id]
     
     if result.get("status") != "completed":
         raise HTTPException(
@@ -123,7 +123,7 @@ async def get_query_suggestions(analysis_id: str):
     """
     Get query suggestions for an analysis.
     """
-    if analysis_id not in _analysis_results:
+    if analysis_id not in analysis_store:
         raise HTTPException(status_code=404, detail="Analysis not found")
     
     if analysis_id in _query_engines:

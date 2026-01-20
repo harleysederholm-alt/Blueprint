@@ -13,8 +13,12 @@ import {
     FileText,
     Download,
     RefreshCw,
+    Code2,
+    Wifi,
+    WifiOff,
 } from "lucide-react";
 import { useAnalysisStore, ProgressEvent } from "@/stores/analysis";
+import { useAnalysisWebSocket } from "@/hooks/use-analysis-websocket";
 import { AnalysisProgress } from "@/components/analysis-progress";
 import { MermaidViewer } from "@/components/mermaid-viewer";
 import { DocumentationTabs } from "@/components/documentation-tabs";
@@ -39,43 +43,11 @@ export default function AnalyzePage() {
         setProgress,
     } = useAnalysisStore();
 
+    const { connectionStatus, retryCount, reconnect } = useAnalysisWebSocket(analysisId);
+
     const [activeTab, setActiveTab] = useState<"diagrams" | "docs" | "evidence">("diagrams");
     const [selectedDiagram, setSelectedDiagram] = useState("c4_context");
 
-    // Connect to WebSocket for live updates
-    useEffect(() => {
-        if (!analysisId) return;
-
-        const wsUrl = `ws://localhost:8000/api/analyze/${analysisId}/stream`;
-        const ws = new WebSocket(wsUrl);
-
-        ws.onopen = () => {
-            console.log("WebSocket connected");
-        };
-
-        ws.onmessage = (event) => {
-            try {
-                const data: ProgressEvent = JSON.parse(event.data);
-                setProgress(data);
-            } catch (e) {
-                console.error("Failed to parse WebSocket message:", e);
-            }
-        };
-
-        ws.onerror = (error) => {
-            console.error("WebSocket error:", error);
-        };
-
-        ws.onclose = () => {
-            console.log("WebSocket closed");
-        };
-
-        return () => {
-            ws.close();
-        };
-    }, [analysisId, setProgress]);
-
-    // Poll for status as fallback
     useEffect(() => {
         if (!analysisId || status === "completed" || status === "failed") return;
 
@@ -85,7 +57,6 @@ export default function AnalyzePage() {
                 if (response.ok) {
                     const data = await response.json();
                     if (data.status === "completed" || data.status === "failed") {
-                        // Final update
                         setProgress({
                             stage: data.status,
                             message: data.status === "completed" ? "Analysis complete!" : data.error,
@@ -98,7 +69,7 @@ export default function AnalyzePage() {
             } catch (e) {
                 console.error("Poll failed:", e);
             }
-        }, 3000);
+        }, 5000);
 
         return () => clearInterval(pollInterval);
     }, [analysisId, status, setProgress]);
@@ -107,11 +78,9 @@ export default function AnalyzePage() {
     const isFailed = status === "failed";
     const isRunning = !isComplete && !isFailed && status !== "idle";
 
-    // Cast to proper types
     const archData = architecture as ArchitectureResult | null;
     const docsData = documentation as DocumentationResult | null;
 
-    // Get diagram code based on selection
     const getDiagramCode = (): string => {
         if (!archData) return "";
         switch (selectedDiagram) {
@@ -128,247 +97,322 @@ export default function AnalyzePage() {
         }
     };
 
+    const getConnectionStatusBadge = () => {
+        switch (connectionStatus) {
+            case "connected":
+                return (
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shrink-0">
+                        <Wifi className="w-3.5 h-3.5" />
+                        <span className="text-xs font-semibold tracking-wide uppercase">Connected</span>
+                    </div>
+                );
+            case "connecting":
+                return (
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 shrink-0">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span className="text-xs font-semibold tracking-wide uppercase">Connecting</span>
+                    </div>
+                );
+            case "disconnected":
+                return (
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 shrink-0">
+                        <WifiOff className="w-3.5 h-3.5" />
+                        <span className="text-xs font-semibold tracking-wide uppercase">
+                            Reconnecting ({retryCount}/3)
+                        </span>
+                    </div>
+                );
+            case "error":
+                return (
+                    <button
+                        onClick={reconnect}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 shrink-0 hover:bg-red-500/20 transition-colors"
+                    >
+                        <WifiOff className="w-3.5 h-3.5" />
+                        <span className="text-xs font-semibold tracking-wide uppercase">Reconnect</span>
+                    </button>
+                );
+            case "complete":
+                return null;
+            default:
+                return null;
+        }
+    };
+
     return (
-        <main className="min-h-screen">
-            {/* Header */}
-            <header className="sticky top-0 z-50 glass-strong border-b border-slate-800/50">
-                <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="min-h-screen w-full bg-[#020617] text-slate-300 font-sans selection:bg-indigo-500/30 flex flex-col relative overflow-x-hidden isolate">
+            <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[800px] bg-indigo-500/10 blur-[120px] rounded-[100%] mix-blend-screen" />
+                <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-blue-600/5 blur-[100px] rounded-full" />
+            </div>
+
+            <header className="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-[#020617]/70 backdrop-blur-xl supports-[backdrop-filter]:bg-[#020617]/40 h-16">
+                <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
                     <button
                         onClick={() => router.push("/")}
-                        className="flex items-center gap-2 text-slate-400 hover:text-slate-200 transition-colors"
+                        className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group shrink-0"
                     >
-                        <ArrowLeft className="w-5 h-5" />
-                        <span>New Analysis</span>
+                        <div className="p-1.5 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors border border-white/5">
+                            <ArrowLeft className="w-4 h-4" />
+                        </div>
+                        <span className="text-sm font-medium hidden sm:inline-block">Back to Home</span>
                     </button>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 sm:gap-6 overflow-hidden">
+                        {getConnectionStatusBadge()}
+
                         {isRunning && (
-                            <div className="flex items-center gap-2 text-blue-400">
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                <span className="text-sm">{Math.round(progress)}%</span>
+                            <div className="flex items-center gap-3 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 shrink-0">
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <span className="text-xs font-semibold tracking-wide uppercase whitespace-nowrap">Analyzing {Math.round(progress)}%</span>
                             </div>
                         )}
                         {isComplete && (
-                            <div className="flex items-center gap-2 text-green-400">
-                                <CheckCircle2 className="w-4 h-4" />
-                                <span className="text-sm">Complete</span>
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shrink-0">
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <span className="text-xs font-semibold tracking-wide uppercase">Complete</span>
                             </div>
                         )}
                         {isFailed && (
-                            <div className="flex items-center gap-2 text-red-400">
-                                <AlertCircle className="w-4 h-4" />
-                                <span className="text-sm">Failed</span>
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 shrink-0">
+                                <AlertCircle className="w-3.5 h-3.5" />
+                                <span className="text-xs font-semibold tracking-wide uppercase">Failed</span>
                             </div>
                         )}
+
+                        <div className="h-4 w-[1px] bg-white/10 shrink-0" />
+
+                        <div className="flex items-center gap-2 shrink-0">
+                            <Code2 className="w-4 h-4 text-indigo-500" />
+                            <span className="text-sm font-semibold text-white tracking-tight hidden sm:inline-block">RepoBlueprint</span>
+                        </div>
                     </div>
                 </div>
             </header>
 
-            <div className="max-w-7xl mx-auto px-6 py-8">
-                {/* Progress Section */}
-                {isRunning && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mb-8"
-                    >
-                        <AnalysisProgress events={progressEvents} currentProgress={progress} />
-                    </motion.div>
-                )}
+            <main className="relative z-10 flex-grow pt-32 pb-24 px-6 w-full grid place-items-center">
+                <div className="w-full max-w-3xl flex flex-col gap-8">
+                    {isRunning && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="w-full"
+                        >
+                            <AnalysisProgress events={progressEvents} currentProgress={progress} />
+                        </motion.div>
+                    )}
 
-                {/* Error Display */}
-                {isFailed && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="glass rounded-xl p-6 border-red-500/30 mb-8"
-                    >
-                        <div className="flex items-start gap-4">
-                            <AlertCircle className="w-6 h-6 text-red-400 mt-0.5" />
-                            <div>
-                                <h3 className="font-semibold text-red-400 mb-2">Analysis Failed</h3>
-                                <p className="text-slate-400">{error || "An unexpected error occurred"}</p>
-                                <button
-                                    onClick={() => router.push("/")}
-                                    className="mt-4 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition-colors flex items-center gap-2"
-                                >
-                                    <RefreshCw className="w-4 h-4" />
-                                    Try Again
-                                </button>
+                    {isFailed && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="bg-red-950/20 border border-red-500/20 rounded-xl p-6 sm:p-8 w-full max-w-3xl"
+                        >
+                            <div className="flex items-start gap-6">
+                                <div className="p-3 bg-red-500/10 rounded-lg shrink-0">
+                                    <AlertCircle className="w-8 h-8 text-red-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-red-400 mb-2">Analysis Failed</h3>
+                                    <p className="text-red-200/60 leading-relaxed mb-6 break-words">{error || "An unexpected error occurred during the analysis process."}</p>
+                                    <button
+                                        onClick={() => router.push("/")}
+                                        className="px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-lg shadow-red-900/20"
+                                    >
+                                        <RefreshCw className="w-4 h-4" />
+                                        Try Again
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    </motion.div>
-                )}
+                        </motion.div>
+                    )}
 
-                {/* Results Section */}
-                {isComplete && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                    >
-                        {/* Tab Navigation */}
-                        <div className="flex items-center gap-2 mb-6 border-b border-slate-800">
-                            {[
-                                { id: "diagrams", label: "Diagrams", icon: Network },
-                                { id: "docs", label: "Documentation", icon: FileText },
-                                { id: "evidence", label: "Evidence", icon: FileCode2 },
-                            ].map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                                    className={`px-4 py-3 flex items-center gap-2 border-b-2 transition-colors ${activeTab === tab.id
-                                            ? "border-blue-500 text-blue-400"
-                                            : "border-transparent text-slate-400 hover:text-slate-200"
-                                        }`}
-                                >
-                                    <tab.icon className="w-4 h-4" />
-                                    {tab.label}
-                                </button>
-                            ))}
+                    {isComplete && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="w-full max-w-7xl"
+                        >
+                            <div className="flex items-center gap-2 mb-8 border-b border-white/5 pb-1 overflow-x-auto scrollbar-hide">
+                                {[
+                                    { id: "diagrams", label: "Architecture Diagrams", icon: Network },
+                                    { id: "docs", label: "Documentation", icon: FileText },
+                                    { id: "evidence", label: "Source Evidence", icon: FileCode2 },
+                                ].map((tab) => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                                        className={`px-6 py-3 flex items-center gap-2.5 border-b-2 text-sm font-medium transition-all whitespace-nowrap ${activeTab === tab.id
+                                            ? "border-indigo-500 text-indigo-400"
+                                            : "border-transparent text-slate-400 hover:text-white"
+                                            }`}
+                                    >
+                                        <tab.icon className="w-4 h-4" />
+                                        {tab.label}
+                                    </button>
+                                ))}
 
-                            <div className="ml-auto">
-                                <button className="px-4 py-2 text-sm text-slate-400 hover:text-slate-200 flex items-center gap-2">
-                                    <Download className="w-4 h-4" />
-                                    Export
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Tab Content */}
-                        <div className="grid lg:grid-cols-3 gap-6">
-                            {/* Main Content */}
-                            <div className="lg:col-span-2">
-                                {activeTab === "diagrams" && (
-                                    <div className="space-y-4">
-                                        {/* Diagram Type Selector */}
-                                        <div className="flex flex-wrap gap-2">
-                                            {[
-                                                { id: "c4_context", label: "C4 Context" },
-                                                { id: "c4_container", label: "C4 Container" },
-                                                { id: "c4_component", label: "C4 Component" },
-                                                { id: "dependency_graph", label: "Dependencies" },
-                                            ].map((diagram) => (
-                                                <button
-                                                    key={diagram.id}
-                                                    onClick={() => setSelectedDiagram(diagram.id)}
-                                                    className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${selectedDiagram === diagram.id
-                                                            ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                                                            : "bg-slate-800/50 text-slate-400 border border-slate-700 hover:bg-slate-700/50"
-                                                        }`}
-                                                >
-                                                    {diagram.label}
-                                                </button>
-                                            ))}
-                                        </div>
-
-                                        {/* Mermaid Diagram */}
-                                        <MermaidViewer
-                                            code={getDiagramCode()}
-                                            title={selectedDiagram.replace(/_/g, " ").replace(/c4/g, "C4")}
-                                        />
-                                    </div>
-                                )}
-
-                                {activeTab === "docs" && docsData && (
-                                    <DocumentationTabs documentation={docsData} />
-                                )}
-
-                                {activeTab === "evidence" && (
-                                    <EvidencePanel evidenceMap={(archData?.evidence_map || []) as Evidence[]} />
-                                )}
+                                <div className="ml-auto pl-4">
+                                    <button className="px-5 py-2 text-sm bg-white/5 hover:bg-white/10 text-white rounded-lg border border-white/10 flex items-center gap-2 transition-colors whitespace-nowrap">
+                                        <Download className="w-4 h-4 text-slate-400" />
+                                        Export Report
+                                    </button>
+                                </div>
                             </div>
 
-                            {/* Sidebar - Quick Stats */}
-                            <div className="space-y-4">
-                                {/* Architecture Overview */}
-                                <div className="glass rounded-xl p-5">
-                                    <h3 className="font-semibold text-slate-200 mb-4">Architecture Overview</h3>
+                            <div className="grid lg:grid-cols-[1fr_320px] gap-10">
+                                <div className="space-y-8 min-w-0">
+                                    {activeTab === "diagrams" && (
+                                        <div className="space-y-6">
+                                            <div className="flex flex-wrap gap-2 bg-[#0B1121]/50 p-1.5 rounded-xl border border-white/5 w-fit">
+                                                {[
+                                                    { id: "c4_context", label: "Context" },
+                                                    { id: "c4_container", label: "Container" },
+                                                    { id: "c4_component", label: "Component" },
+                                                    { id: "dependency_graph", label: "Dependencies" },
+                                                ].map((diagram) => (
+                                                    <button
+                                                        key={diagram.id}
+                                                        onClick={() => setSelectedDiagram(diagram.id)}
+                                                        className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${selectedDiagram === diagram.id
+                                                            ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20"
+                                                            : "text-slate-400 hover:text-white hover:bg-white/5"
+                                                            }`}
+                                                    >
+                                                        {diagram.label}
+                                                    </button>
+                                                ))}
+                                            </div>
 
-                                    <div className="space-y-3 text-sm">
-                                        <div className="flex justify-between">
-                                            <span className="text-slate-400">Style</span>
-                                            <span className="text-slate-200">
-                                                {archData?.architecture_style || "Analyzing..."}
-                                            </span>
-                                        </div>
+                                            <div className="bg-[#0B1121] border border-white/5 rounded-2xl overflow-hidden shadow-2xl shadow-black/50">
+                                                <MermaidViewer
+                                                    code={getDiagramCode()}
+                                                    title={selectedDiagram.replace(/_/g, " ").replace(/c4/g, "C4")}
+                                                />
+                                            </div>
 
-                                        <div className="flex justify-between">
-                                            <span className="text-slate-400">Bounded Contexts</span>
-                                            <span className="text-slate-200">
-                                                {archData?.bounded_contexts?.length || 0}
-                                            </span>
                                         </div>
+                                    )}
 
-                                        <div className="flex justify-between">
-                                            <span className="text-slate-400">Design Patterns</span>
-                                            <span className="text-slate-200">
-                                                {archData?.key_design_patterns?.length || 0}
-                                            </span>
-                                        </div>
-                                    </div>
+                                    {activeTab === "docs" && docsData && (
+                                        <DocumentationTabs documentation={docsData} />
+                                    )}
+
+                                    {activeTab === "evidence" && (
+                                        <EvidencePanel evidenceMap={(archData?.evidence_map || []) as Evidence[]} />
+                                    )}
                                 </div>
 
-                                {/* Health Score */}
-                                {docsData?.architecture_health && (
-                                    <div className="glass rounded-xl p-5">
-                                        <h3 className="font-semibold text-slate-200 mb-4">Health Score</h3>
+                                <aside className="space-y-6 min-w-0">
+                                    <div className="glass rounded-2xl p-6">
+                                        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                            <Network className="w-4 h-4 text-indigo-400" />
+                                            System Overview
+                                        </h3>
 
-                                        <div className="text-center mb-4">
-                                            <div className="text-4xl font-bold gradient-text">
-                                                {docsData.architecture_health.score}
-                                            </div>
-                                            <div className="text-sm text-slate-400">out of 100</div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Coupling/Cohesion */}
-                                {archData?.coupling_cohesion_assessment && (
-                                    <div className="glass rounded-xl p-5">
-                                        <h3 className="font-semibold text-slate-200 mb-4">Quality Metrics</h3>
-
-                                        <div className="space-y-3">
-                                            <div>
-                                                <div className="flex justify-between text-sm mb-1">
-                                                    <span className="text-slate-400">Coupling</span>
-                                                    <span className="text-slate-200">
-                                                        {archData.coupling_cohesion_assessment.coupling_score}/10
-                                                    </span>
-                                                </div>
-                                                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                                                    <div
-                                                        className="h-full bg-gradient-to-r from-green-500 to-yellow-500"
-                                                        style={{
-                                                            width: `${(archData.coupling_cohesion_assessment.coupling_score || 0) * 10}%`,
-                                                        }}
-                                                    />
-                                                </div>
+                                        <div className="space-y-5">
+                                            <div className="flex flex-col gap-2 pb-4 border-b border-white/5">
+                                                <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">Architectural Style</span>
+                                                <span className="text-sm font-medium text-white bg-white/5 px-3 py-2 rounded-lg border border-white/5">
+                                                    {archData?.architecture_style || "Analyzing..."}
+                                                </span>
                                             </div>
 
-                                            <div>
-                                                <div className="flex justify-between text-sm mb-1">
-                                                    <span className="text-slate-400">Cohesion</span>
-                                                    <span className="text-slate-200">
-                                                        {archData.coupling_cohesion_assessment.cohesion_score}/10
-                                                    </span>
-                                                </div>
-                                                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                                                    <div
-                                                        className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
-                                                        style={{
-                                                            width: `${(archData.coupling_cohesion_assessment.cohesion_score || 0) * 10}%`,
-                                                        }}
-                                                    />
-                                                </div>
+                                            <div className="flex justify-between items-center py-2 border-b border-white/5">
+                                                <span className="text-sm text-slate-400">Bounded Contexts</span>
+                                                <span className="text-sm font-mono font-medium text-white bg-indigo-500/10 px-2.5 py-0.5 rounded border border-indigo-500/20">
+                                                    {archData?.bounded_contexts?.length || 0}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex justify-between items-center py-2">
+                                                <span className="text-sm text-slate-400">Design Patterns</span>
+                                                <span className="text-sm font-mono font-medium text-white bg-purple-500/10 px-2.5 py-0.5 rounded border border-purple-500/20">
+                                                    {archData?.key_design_patterns?.length || 0}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
-                                )}
+
+                                    {docsData?.architecture_health && (
+                                        <div className="glass rounded-2xl p-8 flex flex-col items-center justify-center relative overflow-hidden group hover:border-indigo-500/30 transition-colors">
+                                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent blur-2xl opacity-50 group-hover:opacity-100 transition-opacity" />
+                                            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2 relative z-10">Health Score</h3>
+
+                                            <div className="relative z-10 text-center">
+                                                <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-indigo-200 to-indigo-400 tracking-tighter drop-shadow-sm">
+                                                    {docsData.architecture_health.score}
+                                                </div>
+                                                <div className="px-3 py-1 mt-3 rounded-full bg-white/5 border border-white/10 text-[10px] font-medium text-slate-400 uppercase tracking-widest">
+                                                    High Quality
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {archData?.coupling_cohesion_assessment && (
+                                        <div className="glass rounded-2xl p-6">
+                                            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-6">Quality Metrics</h3>
+
+                                            <div className="space-y-6">
+                                                <div>
+                                                    <div className="flex justify-between text-xs font-medium mb-2">
+                                                        <span className="text-slate-400">Coupling</span>
+                                                        <span className="text-white font-mono">
+                                                            {archData.coupling_cohesion_assessment.coupling_score}/10
+                                                        </span>
+                                                    </div>
+                                                    <div className="h-1.5 bg-slate-800/50 rounded-full overflow-hidden border border-white/5">
+                                                        <div
+                                                            className="h-full bg-gradient-to-r from-indigo-500 to-indigo-400 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.3)]"
+                                                            style={{
+                                                                width: `${(archData.coupling_cohesion_assessment.coupling_score || 0) * 10}%`,
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <div className="flex justify-between text-xs font-medium mb-2">
+                                                        <span className="text-slate-400">Cohesion</span>
+                                                        <span className="text-white font-mono">
+                                                            {archData.coupling_cohesion_assessment.cohesion_score}/10
+                                                        </span>
+                                                    </div>
+                                                    <div className="h-1.5 bg-slate-800/50 rounded-full overflow-hidden border border-white/5">
+                                                        <div
+                                                            className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.3)]"
+                                                            style={{
+                                                                width: `${(archData.coupling_cohesion_assessment.cohesion_score || 0) * 10}%`,
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </aside>
                             </div>
-                        </div>
-                    </motion.div>
-                )}
-            </div>
-        </main>
+                        </motion.div>
+                    )}
+
+                    {!isRunning && !isComplete && !isFailed && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="w-full max-w-xl mx-auto text-center py-20"
+                        >
+                            <div className="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-indigo-500/20">
+                                <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-2">Initializing Analysis</h3>
+                            <p className="text-slate-400 text-sm leading-relaxed">
+                                Connecting to the analysis service and preparing your repository...
+                            </p>
+                        </motion.div>
+                    )}
+                </div>
+            </main>
+        </div>
     );
 }

@@ -62,26 +62,42 @@ class BaseAgent(ABC, Generic[T]):
         Returns:
             The generated response text
         """
+        import asyncio
+        
         for attempt in range(max_retries + 1):
             try:
                 logger.info(f"[{self.name}] Generating response (attempt {attempt + 1})")
                 
-                response = self.client.chat(
-                    model=self.model,
-                    messages=[
-                        {"role": "system", "content": self.system_prompt},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                    options={
-                        "temperature": temperature,
-                        "num_predict": 8000,  # Generous token limit
-                    },
+                # Run blocking ollama call in executor
+                loop = asyncio.get_event_loop()
+                
+                def _call_ollama():
+                    return self.client.chat(
+                        model=self.model,
+                        messages=[
+                            {"role": "system", "content": self.system_prompt},
+                            {"role": "user", "content": user_prompt},
+                        ],
+                        options={
+                            "temperature": temperature,
+                            "num_predict": 4096,  # Token limit
+                        },
+                    )
+                
+                # Apply timeout (5 minutes for large prompts)
+                response = await asyncio.wait_for(
+                    loop.run_in_executor(None, _call_ollama),
+                    timeout=settings.ollama_timeout
                 )
                 
                 content = response["message"]["content"]
                 logger.info(f"[{self.name}] Generated {len(content)} characters")
                 return content
                 
+            except asyncio.TimeoutError:
+                logger.error(f"[{self.name}] Timeout on attempt {attempt + 1}")
+                if attempt == max_retries:
+                    raise RuntimeError(f"[{self.name}] LLM inference timed out after {settings.ollama_timeout}s")
             except Exception as e:
                 logger.error(f"[{self.name}] Error on attempt {attempt + 1}: {e}")
                 if attempt == max_retries:

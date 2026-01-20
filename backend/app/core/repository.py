@@ -153,18 +153,51 @@ class RepositoryAnalyzer:
         # Clone in thread pool (git operations are blocking)
         loop = asyncio.get_event_loop()
         
+        # On Windows, configure Git to handle long paths
+        import subprocess
+        import sys
+        if sys.platform == "win32":
+            try:
+                subprocess.run(
+                    ["git", "config", "--global", "core.longpaths", "true"],
+                    check=True, capture_output=True
+                )
+            except Exception:
+                pass
+        
         clone_kwargs = {
             "url": url,
             "to_path": str(self.repo_path),
             "depth": 1,  # Shallow clone for speed
+            "single_branch": True,  # Only clone default branch
+            "no_checkout": False,
         }
         if branch:
             clone_kwargs["branch"] = branch
             
-        self.repo = await loop.run_in_executor(
-            None,
-            lambda: Repo.clone_from(**clone_kwargs)
-        )
+        try:
+            self.repo = await loop.run_in_executor(
+                None,
+                lambda: Repo.clone_from(**clone_kwargs)
+            )
+        except git.GitCommandError as e:
+            # If GitPython fails, try subprocess with explicit longpaths
+            if "filename too long" in str(e).lower() and sys.platform == "win32":
+                logger.warning("GitPython failed with long path error, trying subprocess fallback")
+                cmd = [
+                    "git", "-c", "core.longpaths=true", "clone",
+                    "--depth", "1", "--single-branch", url, str(self.repo_path)
+                ]
+                if branch:
+                    cmd.extend(["--branch", branch])
+                    
+                result = subprocess.run(cmd, capture_output=True, text=True)
+                if result.returncode != 0:
+                    raise RuntimeError(f"Git clone failed: {result.stderr}")
+                    
+                self.repo = Repo(self.repo_path)
+            else:
+                raise
         
         logger.info(f"Cloned successfully: {self.repo_path}")
         return self.repo_path

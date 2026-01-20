@@ -1,4 +1,4 @@
-# RepoBlueprint AI v3
+# RepoBlueprint AI v3.0
 
 **Architectural Intelligence Engine** — Instant, evidence-based, executable architecture understanding.
 
@@ -8,6 +8,13 @@
 ![Docker](https://img.shields.io/badge/docker-ready-green.svg)
 
 RepoBlueprint AI transforms any repository into a comprehensive architectural model. It combines AST-based parsing (Tree-sitter) with local LLMs (Ollama) to generate interactive diagrams, architectural insights, and diffs between commits.
+
+## 🌟 What's New in v3.0: Premium UI/UX
+
+-   **💎 Billion-Dollar Aesthetic**: A complete redesign following modern SaaS standards (Linear, Vercel, Stripe style).
+-   **🎨 Comprehensive Design System**: Unified typography, spacing, and color palettes for a consistent, professional look.
+-   **✨ Glassmorphism & Animations**: Smooth interactions, glass-card layouts, and refined micro-animations using Framer Motion.
+-   **📱 Robust Responsiveness**: Grid-based layouts ensure perfect rendering on all device sizes without content overlap or "packing".
 
 ## 🚀 Key Features
 

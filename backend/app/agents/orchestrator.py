@@ -186,7 +186,7 @@ class AgentOrchestrator:
             )
             
             # Initialize AKG Builder
-            self.akg_builder = AKGBuilder(Path(self.repo_analyzer.current_path))
+            self.akg_builder = AKGBuilder(Path(self.repo_analyzer.repo_path))
             
             # Collect all parseable files
             source_files = []

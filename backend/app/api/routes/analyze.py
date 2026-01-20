@@ -178,6 +178,7 @@ async def stream_analysis(websocket: WebSocket, analysis_id: str):
     
     try:
         last_progress_count = 0
+        ping_counter = 0
         
         while True:
             analysis = analysis_store[analysis_id]
@@ -194,8 +195,22 @@ async def stream_analysis(websocket: WebSocket, analysis_id: str):
                 await websocket.send_json({
                     "stage": analysis["status"],
                     "message": "Analysis complete" if analysis["status"] == "completed" else analysis["error"],
+                    "progress_pct": 100 if analysis["status"] == "completed" else 0,
+                    "timestamp": datetime.utcnow().isoformat(),
                 })
                 break
+            
+            # Send keepalive ping every 10 polls (5 seconds)
+            ping_counter += 1
+            if ping_counter >= 10:
+                await websocket.send_json({
+                    "stage": analysis["status"],
+                    "message": f"Processing... ({analysis['status']})",
+                    "progress_pct": current_progress[-1]["progress_pct"] if current_progress else 5,
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "keepalive": True,
+                })
+                ping_counter = 0
             
             await asyncio.sleep(0.5)
             
