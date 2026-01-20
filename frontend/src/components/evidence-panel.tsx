@@ -29,10 +29,10 @@ export function EvidencePanel({ evidenceMap }: EvidencePanelProps) {
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                         <FileText className="w-5 h-5 text-indigo-400" />
-                        Evidence Map
+                        Todistekartta
                     </h3>
                     <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
-                        {filteredEvidence.length} items
+                        {filteredEvidence.length} kohdetta
                     </span>
                 </div>
 
@@ -43,7 +43,7 @@ export function EvidencePanel({ evidenceMap }: EvidencePanelProps) {
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search evidence by file, content, or ID..."
+                        placeholder="Etsi todisteita tiedoston, sisällön tai ID:n perusteella..."
                         className="w-full pl-10 pr-4 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-xl text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/30 transition-all"
                     />
                 </div>
@@ -61,8 +61,8 @@ export function EvidencePanel({ evidenceMap }: EvidencePanelProps) {
                                 <div
                                     key={i}
                                     className={`rounded-xl transition-all duration-200 ${isExpanded
-                                            ? "bg-white/[0.04] shadow-lg"
-                                            : "hover:bg-white/[0.02]"
+                                        ? "bg-white/[0.04] shadow-lg"
+                                        : "hover:bg-white/[0.02]"
                                         }`}
                                 >
                                     <button
@@ -81,13 +81,13 @@ export function EvidencePanel({ evidenceMap }: EvidencePanelProps) {
                                                     </span>
                                                     <span
                                                         className={`text-[10px] font-medium px-1.5 py-0.5 rounded border ${evidence.confidence === "high"
-                                                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                                                                : evidence.confidence === "medium"
-                                                                    ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                                                    : "bg-slate-700/50 text-slate-400 border-slate-600/30"
+                                                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                                            : evidence.confidence === "medium"
+                                                                ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                                                : "bg-slate-700/50 text-slate-400 border-slate-600/30"
                                                             }`}
                                                     >
-                                                        {evidence.confidence || "medium"} confidence
+                                                        {evidence.confidence === "high" ? "korkea" : evidence.confidence === "medium" ? "keskitaso" : "matala"} luottamus
                                                     </span>
                                                 </div>
 
@@ -122,7 +122,7 @@ export function EvidencePanel({ evidenceMap }: EvidencePanelProps) {
                 ) : (
                     <div className="flex flex-col items-center justify-center h-64 text-slate-500">
                         <Search className="w-8 h-8 mb-3 opacity-20" />
-                        <p className="text-sm">No evidence found matching your search</p>
+                        <p className="text-sm">Hakuehdoilla ei löytynyt todisteita</p>
                     </div>
                 )}
             </div>

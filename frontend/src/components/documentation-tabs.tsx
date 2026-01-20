@@ -19,10 +19,10 @@ interface DocumentationTabsProps {
 }
 
 const tabs = [
-    { id: "executive", label: "Executive", icon: Briefcase },
-    { id: "technical", label: "Technical", icon: Code2 },
-    { id: "security", label: "Security", icon: Shield },
-    { id: "adrs", label: "ADRs", icon: FileText },
+    { id: "executive", label: "Johdon Yhteenveto", icon: Briefcase },
+    { id: "technical", label: "Tekninen", icon: Code2 },
+    { id: "security", label: "Turvallisuus", icon: Shield },
+    { id: "adrs", label: "Päätökset (ADR)", icon: FileText },
 ];
 
 const ImportanceBadge = ({ importance }: { importance: string }) => {
@@ -33,7 +33,7 @@ const ImportanceBadge = ({ importance }: { importance: string }) => {
     };
     return (
         <span className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full border ${styles[importance as keyof typeof styles] || styles.Low}`}>
-            {importance}
+            {importance === 'High' ? 'Korkea' : importance === 'Medium' ? 'Keskitaso' : 'Matala'}
         </span>
     );
 };
@@ -57,8 +57,8 @@ export function DocumentationTabs({ documentation }: DocumentationTabsProps) {
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
                         className={`relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${activeTab === tab.id
-                                ? "text-white bg-white/10"
-                                : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                            ? "text-white bg-white/10"
+                            : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
                             }`}
                     >
                         <tab.icon className="w-4 h-4" />
@@ -89,7 +89,7 @@ export function DocumentationTabs({ documentation }: DocumentationTabsProps) {
                                 <section>
                                     <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                                         <Briefcase className="w-5 h-5 text-indigo-400" />
-                                        Executive Summary
+                                        Johdon Yhteenveto
                                     </h3>
                                     <p className="text-slate-300 text-base leading-[1.75] max-w-prose">
                                         {executiveSummary}
@@ -102,17 +102,17 @@ export function DocumentationTabs({ documentation }: DocumentationTabsProps) {
                                 <section>
                                     <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                                         <Lightbulb className="w-5 h-5 text-amber-400" />
-                                        Key Findings
+                                        Keskeiset Havainnot
                                     </h3>
                                     <div className="space-y-4">
                                         {keyFindings.map((finding: KeyFinding, i: number) => (
                                             <div
                                                 key={i}
                                                 className={`p-5 rounded-xl border transition-colors ${finding.importance === "High"
-                                                        ? "bg-red-500/5 border-red-500/20 hover:border-red-500/30"
-                                                        : finding.importance === "Medium"
-                                                            ? "bg-amber-500/5 border-amber-500/20 hover:border-amber-500/30"
-                                                            : "bg-blue-500/5 border-blue-500/20 hover:border-blue-500/30"
+                                                    ? "bg-red-500/5 border-red-500/20 hover:border-red-500/30"
+                                                    : finding.importance === "Medium"
+                                                        ? "bg-amber-500/5 border-amber-500/20 hover:border-amber-500/30"
+                                                        : "bg-blue-500/5 border-blue-500/20 hover:border-blue-500/30"
                                                     }`}
                                             >
                                                 <div className="flex items-start gap-4">
@@ -143,7 +143,7 @@ export function DocumentationTabs({ documentation }: DocumentationTabsProps) {
                                 <section>
                                     <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                                         <ChevronRight className="w-5 h-5 text-emerald-400" />
-                                        Next Steps
+                                        Seuraavat Askeleet
                                     </h3>
                                     <ul className="space-y-3">
                                         {nextSteps.map((step: string, i: number) => (
@@ -181,7 +181,7 @@ export function DocumentationTabs({ documentation }: DocumentationTabsProps) {
                                         <Code2 className="w-8 h-8 text-slate-500" />
                                     </div>
                                     <p className="text-slate-400 text-base">
-                                        Technical documentation not available
+                                        Teknistä dokumentaatiota ei saatavilla
                                     </p>
                                 </div>
                             )}
@@ -194,7 +194,7 @@ export function DocumentationTabs({ documentation }: DocumentationTabsProps) {
                                 <div>
                                     <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
                                         <Shield className="w-5 h-5 text-cyan-400" />
-                                        Security Recommendations
+                                        Turvallisuussuositukset
                                     </h3>
                                     <div className="space-y-4">
                                         {recommendations.map((rec: Recommendation, i: number) => (
@@ -209,16 +209,16 @@ export function DocumentationTabs({ documentation }: DocumentationTabsProps) {
                                                     <div className="flex gap-2 flex-shrink-0">
                                                         <span
                                                             className={`text-xs font-medium px-3 py-1.5 rounded-full ${rec.priority === "High"
-                                                                    ? "bg-red-500/15 text-red-400 border border-red-500/20"
-                                                                    : rec.priority === "Medium"
-                                                                        ? "bg-amber-500/15 text-amber-400 border border-amber-500/20"
-                                                                        : "bg-blue-500/15 text-blue-400 border border-blue-500/20"
+                                                                ? "bg-red-500/15 text-red-400 border border-red-500/20"
+                                                                : rec.priority === "Medium"
+                                                                    ? "bg-amber-500/15 text-amber-400 border border-amber-500/20"
+                                                                    : "bg-blue-500/15 text-blue-400 border border-blue-500/20"
                                                                 }`}
                                                         >
                                                             {rec.priority}
                                                         </span>
                                                         <span className="text-xs font-medium px-3 py-1.5 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600/30">
-                                                            {rec.effort} effort
+                                                            {rec.effort} työmäärä
                                                         </span>
                                                     </div>
                                                 </div>
@@ -234,7 +234,7 @@ export function DocumentationTabs({ documentation }: DocumentationTabsProps) {
                                         <Shield className="w-8 h-8 text-slate-500" />
                                     </div>
                                     <p className="text-slate-400 text-base">
-                                        Security recommendations not available
+                                        Turvallisuussuosituksia ei saatavilla
                                     </p>
                                 </div>
                             )}
@@ -253,13 +253,13 @@ export function DocumentationTabs({ documentation }: DocumentationTabsProps) {
                                             <h4 className="text-lg font-semibold text-white">{adr.title}</h4>
                                             <span
                                                 className={`text-xs font-medium px-3 py-1.5 rounded-full ${adr.status === "Accepted"
-                                                        ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
-                                                        : adr.status === "Proposed"
-                                                            ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
-                                                            : "bg-slate-700/50 text-slate-400 border border-slate-600/30"
+                                                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
+                                                    : adr.status === "Proposed"
+                                                        ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
+                                                        : "bg-slate-700/50 text-slate-400 border border-slate-600/30"
                                                     }`}
                                             >
-                                                {adr.status}
+                                                {adr.status === 'Accepted' ? 'Hyväksytty' : adr.status === 'Proposed' ? 'Ehdotettu' : adr.status}
                                             </span>
                                         </div>
 
@@ -267,7 +267,7 @@ export function DocumentationTabs({ documentation }: DocumentationTabsProps) {
                                             {adr.context && (
                                                 <div>
                                                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                                                        Context
+                                                        Konteksti
                                                     </div>
                                                     <p className="text-slate-300 text-base leading-relaxed">
                                                         {adr.context}
@@ -277,7 +277,7 @@ export function DocumentationTabs({ documentation }: DocumentationTabsProps) {
                                             {adr.decision && (
                                                 <div>
                                                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                                                        Decision
+                                                        Päätös
                                                     </div>
                                                     <p className="text-slate-300 text-base leading-relaxed">
                                                         {adr.decision}
@@ -287,7 +287,7 @@ export function DocumentationTabs({ documentation }: DocumentationTabsProps) {
                                             {adr.consequences && (
                                                 <div>
                                                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                                                        Consequences
+                                                        Seuraamukset
                                                     </div>
                                                     <p className="text-slate-300 text-base leading-relaxed">
                                                         {adr.consequences}
@@ -303,7 +303,7 @@ export function DocumentationTabs({ documentation }: DocumentationTabsProps) {
                                         <FileText className="w-8 h-8 text-slate-500" />
                                     </div>
                                     <p className="text-slate-400 text-base">
-                                        No Architecture Decision Records generated
+                                        Ei generoituja arkkitehtuuripäätöksiä (ADR)
                                     </p>
                                 </div>
                             )}

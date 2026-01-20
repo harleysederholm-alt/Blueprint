@@ -85,8 +85,8 @@ export function MermaidViewer({ code, title }: MermaidViewerProps) {
         return (
             <div className="glass rounded-2xl p-12 text-center border-dashed border-2 border-slate-800">
                 <Network className="w-12 h-12 text-slate-700 mx-auto mb-4" />
-                <div className="text-slate-500 font-medium">No diagram available for this view</div>
-                <p className="text-slate-600 text-sm mt-2">Try selecting a different architectural view.</p>
+                <div className="text-slate-500 font-medium">Kaaviota ei saatavilla tälle näkymälle</div>
+                <p className="text-slate-600 text-sm mt-2">Kokeile valita toinen arkkitehtuurinäkymä.</p>
             </div>
         );
     }
@@ -99,7 +99,7 @@ export function MermaidViewer({ code, title }: MermaidViewerProps) {
                     <div className="p-1.5 rounded-lg bg-indigo-500/10">
                         <Network className="w-4 h-4 text-indigo-400" />
                     </div>
-                    <h3 className="font-medium text-slate-200 text-sm">{title || "Architecture Diagram"}</h3>
+                    <h3 className="font-medium text-slate-200 text-sm">{title || "Arkkitehtuurikaavio"}</h3>
                 </div>
 
                 <div className="flex items-center bg-slate-900/50 rounded-lg p-1 border border-white/5">
@@ -130,7 +130,7 @@ export function MermaidViewer({ code, title }: MermaidViewerProps) {
                     <button
                         onClick={handleDownload}
                         className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-md transition-all ml-1 active:scale-95"
-                        title="Download SVG"
+                        title="Lataa SVG"
                     >
                         <Download className="w-4 h-4" />
                     </button>
@@ -148,10 +148,10 @@ export function MermaidViewer({ code, title }: MermaidViewerProps) {
                 >
                     {error ? (
                         <div className="text-center max-w-md p-8 rounded-2xl bg-red-500/5 border border-red-500/10">
-                            <div className="text-red-400 font-medium mb-2">Render Error</div>
+                            <div className="text-red-400 font-medium mb-2">Virhe renderöinnissä</div>
                             <div className="text-xs text-red-300/70 font-mono mb-4">{error}</div>
                             <div className="text-xs text-slate-500">
-                                This usually happens when the generated syntax is invalid. Try regenerating the analysis.
+                                Tämä tapahtuu yleensä virheellisen syntaksin vuoksi. Yritä generoida analyysi uudelleen.
                             </div>
                         </div>
                     ) : svgContent ? (
@@ -174,7 +174,7 @@ export function MermaidViewer({ code, title }: MermaidViewerProps) {
                 <details className="group">
                     <summary className="px-5 py-2 text-xs text-slate-500 cursor-pointer hover:text-slate-300 transition-colors flex items-center gap-2 select-none">
                         <span className="group-open:rotate-90 transition-transform">▸</span>
-                        View Mermaid Syntax
+                        Näytä Mermaid-syntaksi
                     </summary>
                     <div className="px-5 pb-4">
                         <div className="rounded-lg bg-black/40 border border-white/5 p-3 overflow-auto max-h-32">

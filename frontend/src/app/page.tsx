@@ -75,7 +75,7 @@ const PipelineStep = ({
     </div>
     <div className="relative z-10 flex flex-col h-full">
       <div className="text-[10px] font-mono text-indigo-400 mb-4 tracking-widest uppercase bg-indigo-500/10 w-fit px-2 py-1 rounded border border-indigo-500/10">
-        Step {number}
+        Vaihe {number}
       </div>
       <h4 className="text-xl font-bold text-white mb-3">{title}</h4>
       <p className="text-slate-400 text-sm leading-relaxed flex-grow">{desc}</p>
@@ -139,7 +139,7 @@ export default function LandingPage() {
                 RepoBlueprint
               </span>
               <span className="text-[10px] font-mono text-indigo-400 font-medium tracking-wider uppercase mt-0.5">
-                Engine v3.0
+                Moottori v3.0
               </span>
             </div>
           </div>
@@ -159,7 +159,7 @@ export default function LandingPage() {
               onClick={() => document.getElementById('repo-input')?.focus()}
               className="bg-white text-slate-950 px-6 py-2.5 rounded-full font-bold hover:bg-indigo-50 transition-all shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)] active:scale-95 pointer-events-auto"
             >
-              Get Started
+              Aloita Nyt
             </button>
           </nav>
 
@@ -180,9 +180,9 @@ export default function LandingPage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
             </span>
-            System Operational
+            Järjestelmä Valmiina
             <span className="mx-2 text-indigo-500/30">|</span>
-            <span className="text-indigo-400/80">Local Inference Ready</span>
+            <span className="text-indigo-400/80">Paikallinen Inferenssi</span>
           </div>
         </motion.div>
 
@@ -192,10 +192,10 @@ export default function LandingPage() {
           transition={{ delay: 0.1 }}
           className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight text-white leading-[1.05] mb-10 drop-shadow-2xl break-words w-full"
         >
-          Architectural Intelligence
+          Arkkitehtuuriälyä
           <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400">
-            For GitHub.
+            GitHubille.
           </span>
         </motion.h1>
 
@@ -205,9 +205,9 @@ export default function LandingPage() {
           transition={{ delay: 0.2 }}
           className="text-base sm:text-lg md:text-xl text-slate-400 max-w-3xl mx-auto leading-relaxed font-light mb-14"
         >
-          Transform complex GitHub repositories into evidence-anchored C4 diagrams, context maps, and audit reports.
+          Muuta monimutkaiset GitHub-repositoriot todisteisiin pohjautuviksi C4-kaavioiksi, kontekstikartoiksi ja auditointiraporteiksi.
           <span className="block sm:inline text-slate-200 font-medium">
-            {" "}Zero cloud data egress. 100% Local.
+            {" "}Ei pilvisiirtoja. 100% Paikallinen.
           </span>
         </motion.p>
 
@@ -245,12 +245,12 @@ export default function LandingPage() {
               {isLoading ? (
                 <>
                   <Zap className="w-5 h-5 animate-spin fill-white" />
-                  <span>Processing...</span>
+                  <span>Käsitellään...</span>
                 </>
               ) : (
                 <>
                   <Zap className="w-5 h-5 fill-white" />
-                  <span>Generate</span>
+                  <span>Analysoi</span>
                 </>
               )}
             </button>
@@ -269,13 +269,13 @@ export default function LandingPage() {
 
           <div className="flex flex-wrap justify-center gap-6 sm:gap-8 mt-10 text-[11px] uppercase tracking-wider font-bold text-slate-500 select-none">
             <span className="flex items-center gap-2 hover:text-emerald-400 transition-colors">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" /> SOC2 Compliant
+              <CheckCircle2 className="w-4 h-4 text-emerald-500" /> SOC2 Yhteensopiva
             </span>
             <span className="flex items-center gap-2 hover:text-emerald-400 transition-colors">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Local Enclave
+              <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Paikallinen Enklaavi
             </span>
             <span className="flex items-center gap-2 hover:text-emerald-400 transition-colors">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Mermaid.js Ready
+              <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Mermaid.js Tuki
             </span>
           </div>
         </motion.div>
@@ -284,9 +284,9 @@ export default function LandingPage() {
       <div className="w-full max-w-7xl mb-40 z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">How It Works</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Kuinka Se Toimii</h2>
             <p className="text-slate-400 max-w-md text-base leading-relaxed">
-              From raw code to executive intelligence in three automated steps.
+              Raakakoodista johdon tason älykkyyteen kolmessa automaattisessa vaiheessa.
             </p>
           </div>
           <div className="h-px flex-grow bg-gradient-to-r from-transparent via-white/10 to-transparent hidden md:block mb-4 mx-8" />
@@ -296,20 +296,20 @@ export default function LandingPage() {
           <PipelineStep
             delay={0}
             number="01"
-            title="Ingest & Parse"
-            desc="Clones the repository locally and builds an Abstract Syntax Tree to map code structure and dependencies."
+            title="Lataus & Jäsennys"
+            desc="Kloonaa repositorion paikallisesti ja rakentaa syntaksipuun (AST) koodin rakenteen ja riippuvuuksien kartoittamiseksi."
           />
           <PipelineStep
             delay={0.1}
             number="02"
-            title="Reason & Infer"
-            desc="Uses local LLMs to identify design patterns, bounded contexts, and data flows without cloud egress."
+            title="Päättely & Analyysi"
+            desc="Käyttää paikallisia kielimalleja (LLM) tunnistamaan suunnittelumallit, rajatut kontekstit ja tietovirrat ilman pilvisiirtoja."
           />
           <PipelineStep
             delay={0.2}
             number="03"
-            title="Visualize"
-            desc="Generates instant C4 diagrams (Context, Container, Component) and comprehensive audit reports."
+            title="Visualisointi"
+            desc="Luo välittömästi C4-kaaviot (Context, Container, Component) ja kattavat auditointiraportit."
           />
         </div>
       </div>
@@ -320,29 +320,29 @@ export default function LandingPage() {
             order={1}
             delay={0}
             icon={<Search className="w-7 h-7 text-indigo-400" />}
-            title="Deep Analysis"
-            desc="AST parsing meets local LLMs to understand code logic, not just syntax. Identifies patterns and anti-patterns automatically."
+            title="Syväanalyysi"
+            desc="AST-jäsennys kohtaa paikalliset kielimallit. Ymmärtää koodin logiikan, ei vain syntaksia. Tunnistaa mallit ja anti-patternit automaattisesti."
           />
           <FeatureCard
             order={2}
             delay={0.1}
             icon={<Layout className="w-7 h-7 text-blue-400" />}
-            title="Auto C4 Models"
-            desc="Generate Context, Container, and Component diagrams instantly. Export to Mermaid, PlantUML, or Structurizr."
+            title="Auto C4 Mallinnus"
+            desc="Luo Context-, Container- ja Component-kaaviot hetkessä. Vie Mermaid-, PlantUML- tai Structurizr-muodossa."
           />
           <FeatureCard
             order={3}
             delay={0.2}
             icon={<Shield className="w-7 h-7 text-cyan-400" />}
-            title="Local Executive"
-            desc="Runs entirely on Ollama. Your source code never leaves your machine. Perfect for sensitive enterprise projects."
+            title="Paikallinen Turva"
+            desc="Pyörii kokonaan Ollaman päällä. Lähdekoodisi ei koskaan poistu koneeltasi. Täydellinen arkaluontoisille yritysprojekteille."
           />
           <FeatureCard
             order={4}
             delay={0.3}
             icon={<Database className="w-7 h-7 text-purple-400" />}
-            title="Graph Database"
-            desc="Maps dependencies and call graphs into a queryable knowledge graph. Ask natural language questions about architecture."
+            title="Graafitietokanta"
+            desc="Kartoittaa riippuvuudet ja kutsukaaviot kyseltäväksi tietämysverkoksi. Esitä kysymyksiä arkkitehtuurista luonnollisella kielellä."
           />
         </div>
       </div>

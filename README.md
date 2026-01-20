@@ -1,66 +1,67 @@
 # RepoBlueprint AI v3.0
 
-**Architectural Intelligence Engine** — Instant, evidence-based, executable architecture understanding.
+**Arkkitehtuurimoottori** — Välitön, todisteisiin pohjautuva, suoritettava ymmärrys arkkitehtuurista.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
 ![TypeScript](https://img.shields.io/badge/typescript-5.0+-blue.svg)
 ![Docker](https://img.shields.io/badge/docker-ready-green.svg)
 
-RepoBlueprint AI transforms any repository into a comprehensive architectural model. It combines AST-based parsing (Tree-sitter) with local LLMs (Ollama) to generate interactive diagrams, architectural insights, and diffs between commits.
+RepoBlueprint AI muuttaa minkä tahansa repositorion kattavaksi arkkitehtuurimalliksi. Se yhdistää AST-pohjaisen jäsennyksen (Tree-sitter) paikallisiin kielimalleihin (Ollama) luodakseen interaktiivisia kaavioita, arkkitehtuurisia oivalluksia ja vertailuja commitien välillä.
 
-## 🌟 What's New in v3.0: Premium UI/UX
+## 🌟 Uutta v3.0:ssa: Premium UI/UX & Suomenkielinen Tuki
 
--   **💎 Billion-Dollar Aesthetic**: A complete redesign following modern SaaS standards (Linear, Vercel, Stripe style).
--   **🎨 Comprehensive Design System**: Unified typography, spacing, and color palettes for a consistent, professional look.
--   **✨ Glassmorphism & Animations**: Smooth interactions, glass-card layouts, and refined micro-animations using Framer Motion.
--   **📱 Robust Responsiveness**: Grid-based layouts ensure perfect rendering on all device sizes without content overlap or "packing".
+-   **💎 Miljardin Dollarin Estetiikka**: Täydellinen uudistus modernien SaaS-standardien mukaisesti (Linear, Vercel, Stripe -tyyli).
+-   **🇫🇮 Täysin Suomennettu**: Käyttöliittymä on lokalisoitu kokonaan suomeksi.
+-   **🎨 Kattava Design System**: Yhtenäinen typografia, välimatkat ja väripaletit ammattimaisen ilmeen takaamiseksi.
+-   **✨ Glassmorphism & Animaatiot**: Sulavat interaktiot, lasimaiset kortit ja hienostuneet mikroanimaatiot Framer Motionilla.
+-   **📱 Vankka Responsiivisuus**: Grid-pohjaiset asettelut varmistavat täydellisen toimivuuden kaikilla laitteilla ilman sisällön pakkautumista.
 
-## 🚀 Key Features
+## 🚀 Tärkeimmät Ominaisuudet
 
--   **🧠 Architectural Knowledge Graph (AKG)**: Maps components, dependencies, and layers with evidence anchoring.
--   **🔍 Natural Language Query**: Ask questions like "Where is the authentication logic?" or "What depends on the User service?".
--   **🔄 Blueprint Diff**: Compare architecture between branches or commits to detect breaking changes and drift.
--   **📊 Interactive Diagrams**: Auto-generated C4 Context, Container, and Component diagrams (Mermaid.js).
--   **📑 Multi-Format Export**: specialized reports in Markdown, HTML (standalone), and JSON.
--   **🔐 100% Local Privacy**: Runs entirely on your machine using Ollama. Zero code leaves your environment.
+-   **🧠 Arkkitehtuurin Tietämysverkko (AKG)**: Kartoi komponentit, riippuvuudet ja kerrokset todisteisiin ankkuroiden.
+-   **🔍 Luonnollisen Kielen Kyselyt**: Kysy kysymyksiä kuten "Missä autentikaatiologiikka sijaitsee?" tai "Mitä riippuvuuksia User-palvelulla on?".
+-   **🔄 Blueprint Diff**: Vertaa arkkitehtuuria haarojen tai commitien välillä havaitaksesi rikkovat muutokset.
+-   **📊 Interaktiiviset Kaaviot**: Automaattisesti generoidut C4 Context, Container ja Component -kaaviot (Mermaid.js).
+-   **📑 Monimuotoinen Vienti**: Erikoisraportit Markdown-, HTML- (offline) ja JSON-muodoissa.
+-   **🔐 100% Paikallinen Yksityisyys**: Toimii kokonaan omalla koneellasi Ollaman avulla. Lähdekoodisi ei koskaan poistu ympäristöstäsi.
 
-## 🛠️ Tech Stack
+## 🛠️ Tekninen Pino
 
 -   **Backend**: Python 3.11, FastAPI, NetworkX, GitPython, Tree-sitter
 -   **Frontend**: Next.js 15, TypeScript, Tailwind CSS, Shadcn/UI, Framer Motion
 -   **AI/ML**: Ollama (Qwen2.5-Coder / Llama 3), LangChain
 -   **Infrastructure**: Docker, Docker Compose
 
-## 🏁 Quick Start
+## 🏁 Pika-aloitus
 
-### Prerequisites
+### Esivaatimukset
 
 -   [Docker & Docker Compose](https://www.docker.com/products/docker-desktop/)
--   [Ollama](https://ollama.com/) running locally (default: `http://localhost:11434`)
+-   [Ollama](https://ollama.com/) käynnissä paikallisesti (oletus: `http://localhost:11434`)
 
-### Run with Docker
+### Aja Dockerilla
 
 ```bash
-# 1. Clone the repository
+# 1. Kloonaa repositorio
 git clone https://github.com/harleysederholm-alt/BluePrint.git
 cd BluePrint
 
-# 2. Start the application
+# 2. Käynnistä sovellus
 docker-compose up --build
 ```
 
-Access the application:
+Avaa sovellus:
 -   **Frontend**: [http://localhost:3000](http://localhost:3000)
 -   **Backend API**: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-### Manual Setup (Development)
+### Manuaalinen Asennus (Kehitys)
 
 **Backend:**
 ```bash
 cd backend
 python -m venv venv
-source venv/bin/activate  # or `venv\Scripts\activate` on Windows
+source venv/bin/activate  # tai `venv\Scripts\activate` Windowsilla
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
@@ -72,34 +73,34 @@ npm install
 npm run dev
 ```
 
-## 📖 Usage Guides
+## 📖 Käyttöoppaat
 
-### Analyzing a Repository
-1.  Enter a GitHub/GitLab URL on the home page.
-2.  Select an audience profile (Engineer, Manager, Architect).
-3.  Watch the real-time analysis as agents parse code and build the graph.
+### Repositorion Analysointi
+1.  Syötä GitHub/GitLab URL etusivulla.
+2.  Valitse kohdeyleisöprofiili (Insinööri, Johtaja, Arkkitehti).
+3.  Seuraa reaaliaikaista analyysia, kun agentit jäsentävät koodia ja rakentavat graafia.
 
-### Querying the Graph
-Use the **Query** tab to ask questions:
--   *"Find all controllers in the payment module"*
--   *"Show me circular dependencies"*
--   *"Analyze the complexity of the DataLayer"*
+### Graafin Kysely
+Käytä **Kysely (Query)** -välilehteä esittääksesi kysymyksiä:
+-   *"Etsi kaikki kontrollerit maksu-moduulista"*
+-   *"Näytä kehäriippuvuudet"*
+-   *"Analysoi DataLayerin monimutkaisuus"*
 
-### Exporting Reports
-Click the **Export** button to download:
--   `Analysis.md` - Comprehensive architecture report.
--   `Analysis.html` - Self-contained offline report with interactive diagrams.
+### Raporttien Vienti
+Klikkaa **Vie (Export)** -painiketta ladataksesi:
+-   `Analysis.md` - Kattava arkkitehtuuriraportti.
+-   `Analysis.html` - Itsenäinen offline-raportti interaktiivisilla kaavioilla.
 
-## 🧪 Testing
+## 🧪 Testaus
 
 ```bash
-# Backend tests
+# Backend testit
 cd backend && pytest
 
-# Frontend type check
+# Frontend tyyppitarkistus
 cd frontend && npx tsc --noEmit
 ```
 
-## 📄 License
+## 📄 Lisenssi
 
 MIT © 2026 RepoBlueprint AI

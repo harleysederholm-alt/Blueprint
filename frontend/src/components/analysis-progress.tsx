@@ -19,12 +19,12 @@ interface AnalysisProgressProps {
 }
 
 const stages = [
-    { id: "cloning", label: "Cloning Repository", icon: GitBranch },
-    { id: "parsing", label: "Parsing Files", icon: FileSearch },
-    { id: "building_akg", label: "Building Knowledge Graph", icon: Brain },
-    { id: "architect_analysis", label: "Architect AI Analysis", icon: FileCode2 },
-    { id: "runtime_analysis", label: "Runtime Analysis", icon: Workflow },
-    { id: "documentation", label: "Generating Documentation", icon: FileText },
+    { id: "cloning", label: "Repositorion Kloonaus", icon: GitBranch },
+    { id: "parsing", label: "Tiedostojen Jäsennys", icon: FileSearch },
+    { id: "building_akg", label: "Tietämysverkon Rakennus", icon: Brain },
+    { id: "architect_analysis", label: "AI Arkkitehtianalyysi", icon: FileCode2 },
+    { id: "runtime_analysis", label: "Ajonaikainen Analyysi", icon: Workflow },
+    { id: "documentation", label: "Dokumentaation Luonti", icon: FileText },
 ];
 
 export function AnalysisProgress({ events, currentProgress }: AnalysisProgressProps) {
@@ -35,7 +35,7 @@ export function AnalysisProgress({ events, currentProgress }: AnalysisProgressPr
         <div className="glass rounded-2xl p-8">
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
-                <h2 className="text-xl font-semibold text-white">Analysis Progress</h2>
+                <h2 className="text-xl font-semibold text-white">Analyysin Eteneminen</h2>
                 <div className="flex items-center gap-3">
                     <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
                         {Math.round(currentProgress)}%
@@ -67,18 +67,18 @@ export function AnalysisProgress({ events, currentProgress }: AnalysisProgressPr
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.05, duration: 0.3 }}
                             className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${isCurrent
-                                    ? "bg-indigo-500/10 border border-indigo-500/20"
-                                    : isComplete
-                                        ? "bg-emerald-500/5 border border-transparent"
-                                        : "opacity-40 border border-transparent"
+                                ? "bg-indigo-500/10 border border-indigo-500/20"
+                                : isComplete
+                                    ? "bg-emerald-500/5 border border-transparent"
+                                    : "opacity-40 border border-transparent"
                                 }`}
                         >
                             <div
                                 className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 ${isComplete
-                                        ? "bg-emerald-500/15 text-emerald-400"
-                                        : isCurrent
-                                            ? "bg-indigo-500/15 text-indigo-400"
-                                            : "bg-slate-800/50 text-slate-500"
+                                    ? "bg-emerald-500/15 text-emerald-400"
+                                    : isCurrent
+                                        ? "bg-indigo-500/15 text-indigo-400"
+                                        : "bg-slate-800/50 text-slate-500"
                                     }`}
                             >
                                 {isComplete ? (
@@ -110,7 +110,7 @@ export function AnalysisProgress({ events, currentProgress }: AnalysisProgressPr
             {events.length > 0 && (
                 <div className="mt-8 pt-6 border-t border-white/5">
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4">
-                        Recent Activity
+                        Viimeisimmät Tapahtumat
                     </div>
                     <div className="space-y-2 max-h-36 overflow-y-auto scrollbar-hide">
                         {events.slice(-5).reverse().map((event, i) => (

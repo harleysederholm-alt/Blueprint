@@ -59,7 +59,7 @@ export default function AnalyzePage() {
                     if (data.status === "completed" || data.status === "failed") {
                         setProgress({
                             stage: data.status,
-                            message: data.status === "completed" ? "Analysis complete!" : data.error,
+                            message: data.status === "completed" ? "Analyysi valmis!" : data.error,
                             progress_pct: data.status === "completed" ? 100 : 0,
                             timestamp: new Date().toISOString(),
                             result: data,
@@ -103,14 +103,14 @@ export default function AnalyzePage() {
                 return (
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shrink-0">
                         <Wifi className="w-3.5 h-3.5" />
-                        <span className="text-xs font-semibold tracking-wide uppercase">Connected</span>
+                        <span className="text-xs font-semibold tracking-wide uppercase">Yhdistetty</span>
                     </div>
                 );
             case "connecting":
                 return (
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 shrink-0">
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        <span className="text-xs font-semibold tracking-wide uppercase">Connecting</span>
+                        <span className="text-xs font-semibold tracking-wide uppercase">Yhdistetään</span>
                     </div>
                 );
             case "disconnected":
@@ -118,7 +118,7 @@ export default function AnalyzePage() {
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 shrink-0">
                         <WifiOff className="w-3.5 h-3.5" />
                         <span className="text-xs font-semibold tracking-wide uppercase">
-                            Reconnecting ({retryCount}/3)
+                            Yhdistetään ({retryCount}/3)
                         </span>
                     </div>
                 );
@@ -129,7 +129,7 @@ export default function AnalyzePage() {
                         className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 shrink-0 hover:bg-red-500/20 transition-colors"
                     >
                         <WifiOff className="w-3.5 h-3.5" />
-                        <span className="text-xs font-semibold tracking-wide uppercase">Reconnect</span>
+                        <span className="text-xs font-semibold tracking-wide uppercase">Yhdistä uudelleen</span>
                     </button>
                 );
             case "complete":
@@ -155,7 +155,7 @@ export default function AnalyzePage() {
                         <div className="p-1.5 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors border border-white/5">
                             <ArrowLeft className="w-4 h-4" />
                         </div>
-                        <span className="text-sm font-medium hidden sm:inline-block">Back to Home</span>
+                        <span className="text-sm font-medium hidden sm:inline-block">Etusivulle</span>
                     </button>
 
                     <div className="flex items-center gap-4 sm:gap-6 overflow-hidden">
@@ -164,19 +164,19 @@ export default function AnalyzePage() {
                         {isRunning && (
                             <div className="flex items-center gap-3 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 shrink-0">
                                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                <span className="text-xs font-semibold tracking-wide uppercase whitespace-nowrap">Analyzing {Math.round(progress)}%</span>
+                                <span className="text-xs font-semibold tracking-wide uppercase whitespace-nowrap">Analysoidaan {Math.round(progress)}%</span>
                             </div>
                         )}
                         {isComplete && (
                             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shrink-0">
                                 <CheckCircle2 className="w-3.5 h-3.5" />
-                                <span className="text-xs font-semibold tracking-wide uppercase">Complete</span>
+                                <span className="text-xs font-semibold tracking-wide uppercase">Valmis</span>
                             </div>
                         )}
                         {isFailed && (
                             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 shrink-0">
                                 <AlertCircle className="w-3.5 h-3.5" />
-                                <span className="text-xs font-semibold tracking-wide uppercase">Failed</span>
+                                <span className="text-xs font-semibold tracking-wide uppercase">Epäonnistui</span>
                             </div>
                         )}
 
@@ -213,14 +213,14 @@ export default function AnalyzePage() {
                                     <AlertCircle className="w-8 h-8 text-red-400" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold text-red-400 mb-2">Analysis Failed</h3>
-                                    <p className="text-red-200/60 leading-relaxed mb-6 break-words">{error || "An unexpected error occurred during the analysis process."}</p>
+                                    <h3 className="text-xl font-bold text-red-400 mb-2">Analyysi Epäonnistui</h3>
+                                    <p className="text-red-200/60 leading-relaxed mb-6 break-words">{error || "Odottamaton virhe analyysin aikana."}</p>
                                     <button
                                         onClick={() => router.push("/")}
                                         className="px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-lg shadow-red-900/20"
                                     >
                                         <RefreshCw className="w-4 h-4" />
-                                        Try Again
+                                        Yritä Uudelleen
                                     </button>
                                 </div>
                             </div>
@@ -235,9 +235,9 @@ export default function AnalyzePage() {
                         >
                             <div className="flex items-center gap-2 mb-8 border-b border-white/5 pb-1 overflow-x-auto scrollbar-hide">
                                 {[
-                                    { id: "diagrams", label: "Architecture Diagrams", icon: Network },
-                                    { id: "docs", label: "Documentation", icon: FileText },
-                                    { id: "evidence", label: "Source Evidence", icon: FileCode2 },
+                                    { id: "diagrams", label: "Arkkitehtuurikaaviot", icon: Network },
+                                    { id: "docs", label: "Dokumentaatio", icon: FileText },
+                                    { id: "evidence", label: "Lähdekooditodisteet", icon: FileCode2 },
                                 ].map((tab) => (
                                     <button
                                         key={tab.id}
@@ -255,7 +255,7 @@ export default function AnalyzePage() {
                                 <div className="ml-auto pl-4">
                                     <button className="px-5 py-2 text-sm bg-white/5 hover:bg-white/10 text-white rounded-lg border border-white/10 flex items-center gap-2 transition-colors whitespace-nowrap">
                                         <Download className="w-4 h-4 text-slate-400" />
-                                        Export Report
+                                        Vie Raportti
                                     </button>
                                 </div>
                             </div>
@@ -307,26 +307,26 @@ export default function AnalyzePage() {
                                     <div className="glass rounded-2xl p-6">
                                         <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                                             <Network className="w-4 h-4 text-indigo-400" />
-                                            System Overview
+                                            Järjestelmän Yleiskatsaus
                                         </h3>
 
                                         <div className="space-y-5">
                                             <div className="flex flex-col gap-2 pb-4 border-b border-white/5">
-                                                <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">Architectural Style</span>
+                                                <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">Arkkitehtuurityyli</span>
                                                 <span className="text-sm font-medium text-white bg-white/5 px-3 py-2 rounded-lg border border-white/5">
-                                                    {archData?.architecture_style || "Analyzing..."}
+                                                    {archData?.architecture_style || "Analysoidaan..."}
                                                 </span>
                                             </div>
 
                                             <div className="flex justify-between items-center py-2 border-b border-white/5">
-                                                <span className="text-sm text-slate-400">Bounded Contexts</span>
+                                                <span className="text-sm text-slate-400">Rajatut Kontekstit</span>
                                                 <span className="text-sm font-mono font-medium text-white bg-indigo-500/10 px-2.5 py-0.5 rounded border border-indigo-500/20">
                                                     {archData?.bounded_contexts?.length || 0}
                                                 </span>
                                             </div>
 
                                             <div className="flex justify-between items-center py-2">
-                                                <span className="text-sm text-slate-400">Design Patterns</span>
+                                                <span className="text-sm text-slate-400">Suunnittelumallit</span>
                                                 <span className="text-sm font-mono font-medium text-white bg-purple-500/10 px-2.5 py-0.5 rounded border border-purple-500/20">
                                                     {archData?.key_design_patterns?.length || 0}
                                                 </span>
@@ -337,14 +337,14 @@ export default function AnalyzePage() {
                                     {docsData?.architecture_health && (
                                         <div className="glass rounded-2xl p-8 flex flex-col items-center justify-center relative overflow-hidden group hover:border-indigo-500/30 transition-colors">
                                             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent blur-2xl opacity-50 group-hover:opacity-100 transition-opacity" />
-                                            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2 relative z-10">Health Score</h3>
+                                            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2 relative z-10">Terveyspisteet</h3>
 
                                             <div className="relative z-10 text-center">
                                                 <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-indigo-200 to-indigo-400 tracking-tighter drop-shadow-sm">
                                                     {docsData.architecture_health.score}
                                                 </div>
                                                 <div className="px-3 py-1 mt-3 rounded-full bg-white/5 border border-white/10 text-[10px] font-medium text-slate-400 uppercase tracking-widest">
-                                                    High Quality
+                                                    Korkea Laatu
                                                 </div>
                                             </div>
                                         </div>
@@ -352,12 +352,12 @@ export default function AnalyzePage() {
 
                                     {archData?.coupling_cohesion_assessment && (
                                         <div className="glass rounded-2xl p-6">
-                                            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-6">Quality Metrics</h3>
+                                            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-6">Laatumittarit</h3>
 
                                             <div className="space-y-6">
                                                 <div>
                                                     <div className="flex justify-between text-xs font-medium mb-2">
-                                                        <span className="text-slate-400">Coupling</span>
+                                                        <span className="text-slate-400">Kytkentä</span>
                                                         <span className="text-white font-mono">
                                                             {archData.coupling_cohesion_assessment.coupling_score}/10
                                                         </span>
@@ -374,7 +374,7 @@ export default function AnalyzePage() {
 
                                                 <div>
                                                     <div className="flex justify-between text-xs font-medium mb-2">
-                                                        <span className="text-slate-400">Cohesion</span>
+                                                        <span className="text-slate-400">Koheesio</span>
                                                         <span className="text-white font-mono">
                                                             {archData.coupling_cohesion_assessment.cohesion_score}/10
                                                         </span>
@@ -405,9 +405,9 @@ export default function AnalyzePage() {
                             <div className="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-indigo-500/20">
                                 <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
                             </div>
-                            <h3 className="text-xl font-bold text-white mb-2">Initializing Analysis</h3>
+                            <h3 className="text-xl font-bold text-white mb-2">Alustetaan Analyysiä</h3>
                             <p className="text-slate-400 text-sm leading-relaxed">
-                                Connecting to the analysis service and preparing your repository...
+                                Yhdistetään palveluun ja valmistellaan dataa...
                             </p>
                         </motion.div>
                     )}
