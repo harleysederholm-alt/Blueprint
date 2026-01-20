@@ -147,6 +147,14 @@ async def run_analysis(
                     analysis_store[analysis_id]["runtime"] = progress.result
                 elif progress.stage == "documentation_complete":
                     analysis_store[analysis_id]["documentation"] = progress.result
+                elif progress.stage == "completed":
+                    # Ensure full result is stored
+                    if "architecture" in progress.result:
+                        analysis_store[analysis_id]["architecture"] = progress.result["architecture"]
+                    if "runtime" in progress.result:
+                        analysis_store[analysis_id]["runtime"] = progress.result["runtime"]
+                    if "documentation" in progress.result:
+                        analysis_store[analysis_id]["documentation"] = progress.result["documentation"]
         
         analysis_store[analysis_id]["status"] = "completed"
         analysis_store[analysis_id]["completed_at"] = datetime.utcnow()

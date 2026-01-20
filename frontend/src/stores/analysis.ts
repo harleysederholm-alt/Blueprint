@@ -98,6 +98,11 @@ export const useAnalysisStore = create<AnalysisState>((set, get) => ({
                 newState.runtime = event.result;
             } else if (event.stage === "documentation_complete" && event.result) {
                 newState.documentation = event.result;
+            } else if (event.stage === "completed" && event.result) {
+                // When analysis is fully complete, populate all data if available
+                if (event.result.architecture) newState.architecture = event.result.architecture as Record<string, unknown>;
+                if (event.result.runtime) newState.runtime = event.result.runtime as Record<string, unknown>;
+                if (event.result.documentation) newState.documentation = event.result.documentation as Record<string, unknown>;
             } else if (event.stage === "failed") {
                 newState.error = event.message;
             }

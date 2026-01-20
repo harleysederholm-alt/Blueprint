@@ -314,7 +314,7 @@ export default function AnalyzePage() {
                                             <div className="flex flex-col gap-2 pb-4 border-b border-white/5">
                                                 <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">Arkkitehtuurityyli</span>
                                                 <span className="text-sm font-medium text-white bg-white/5 px-3 py-2 rounded-lg border border-white/5">
-                                                    {archData?.architecture_style || "Analysoidaan..."}
+                                                    {archData?.architecture_style || (status === "completed" ? "Ei tunnistettu" : "Analysoidaan...")}
                                                 </span>
                                             </div>
 
