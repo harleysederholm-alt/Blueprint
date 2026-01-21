@@ -1,32 +1,73 @@
 import { create } from "zustand";
 
+/**
+ * Base URL for the API. Defaults to localhost:8000 if not set in environment.
+ */
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+/**
+ * Represents a progress event received from the backend during analysis.
+ */
 export interface ProgressEvent {
+    /** The current stage of analysis (e.g., 'cloning', 'parsing'). */
     stage: string;
+    /** A descriptive message about the current progress. */
     message: string;
+    /** The percentage of completion (0-100). */
     progress_pct: number;
+    /** timestamp of the event. */
     timestamp: string;
+    /** Optional result data associated with the event (e.g., intermediate analysis artifacts). */
     result?: Record<string, unknown>;
+    /** Optional keepalive flag for heartbeat messages. */
+    keepalive?: boolean;
 }
 
+/**
+ * State definition for the analysis store.
+ */
 export interface AnalysisState {
+    /** The ID of the current analysis session. */
     currentAnalysisId: string | null;
+    /** The current status of the analysis (e.g., 'idle', 'starting', 'queued', 'completed', 'failed'). */
     status: string;
+    /** The overall progress percentage (0-100). */
     progress: number;
+    /** A list of progress events received. */
     progressEvents: ProgressEvent[];
+    /** The architectural analysis result. */
     architecture: Record<string, unknown> | null;
+    /** The runtime analysis result. */
     runtime: Record<string, unknown> | null;
+    /** The documentation generation result. */
     documentation: Record<string, unknown> | null;
+    /** Generated diagrams given ID -> Content mapping. */
     diagrams: Record<string, string>;
+    /** Error message if the analysis failed. */
     error: string | null;
 
     // Actions
+    /**
+     * Starts a new analysis for the given repository.
+     * @param repoUrl The URL of the repository to analyze.
+     * @param audience The target audience for the analysis.
+     * @returns A promise that resolves to the analysis ID.
+     */
     startAnalysis: (repoUrl: string, audience: string) => Promise<string>;
+    /**
+     * Updates the store state based on a received progress event.
+     * @param event The progress event to process.
+     */
     setProgress: (event: ProgressEvent) => void;
+    /**
+     * Resets the store to its initial state.
+     */
     reset: () => void;
 }
 
+/**
+ * Zustand store for managing analysis state.
+ */
 export const useAnalysisStore = create<AnalysisState>((set, get) => ({
     currentAnalysisId: null,
     status: "idle",

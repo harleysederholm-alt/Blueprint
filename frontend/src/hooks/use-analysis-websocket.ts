@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * @fileoverview WebSocket hook for real-time analysis updates.
+ * @module hooks/use-analysis-websocket
+ */
+
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useAnalysisStore, ProgressEvent } from "@/stores/analysis";
 
@@ -7,14 +12,32 @@ const WS_BASE = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000";
 const MAX_RETRIES = 5;
 const RETRY_DELAY_MS = 1000;
 
+/**
+ * Connection status states.
+ */
 type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error" | "complete";
 
+/**
+ * Result of the useAnalysisWebSocket hook.
+ */
 interface UseAnalysisWebSocketResult {
+    /** Current connection status. */
     connectionStatus: ConnectionStatus;
+    /** Number of retry attempts made. */
     retryCount: number;
+    /** Function to manual trigger a reconnection. */
     reconnect: () => void;
 }
 
+/**
+ * Hook to manage WebSocket connection for receiving analysis progress updates.
+ *
+ * Handles connection establishment, automatic retries, heartbeat filtering,
+ * and state updates via the analysis store.
+ *
+ * @param {string | null} analysisId - The ID of the analysis to monitor.
+ * @returns {UseAnalysisWebSocketResult} The hook result including status and actions.
+ */
 export function useAnalysisWebSocket(analysisId: string | null): UseAnalysisWebSocketResult {
     const wsRef = useRef<WebSocket | null>(null);
     const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
