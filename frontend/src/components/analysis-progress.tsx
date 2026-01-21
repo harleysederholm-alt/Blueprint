@@ -1,5 +1,12 @@
 "use client";
 
+/**
+ * @fileoverview Analysis Progress Component.
+ * @module components/analysis-progress
+ * @description Displays the progress of the analysis pipeline, including current stage,
+ * percentage complete, and a log of recent events.
+ */
+
 import { motion } from "framer-motion";
 import {
     GitBranch,
@@ -10,15 +17,30 @@ import {
     FileText,
     CheckCircle2,
     Loader2,
+    LucideIcon,
 } from "lucide-react";
 import { ProgressEvent } from "@/stores/analysis";
 
+/**
+ * Props for the AnalysisProgress component.
+ */
 interface AnalysisProgressProps {
+    /** List of progress events received so far. */
     events: ProgressEvent[];
+    /** Current overall progress percentage (0-100). */
     currentProgress: number;
 }
 
-const stages = [
+/**
+ * Represents a stage in the analysis pipeline.
+ */
+interface AnalysisStage {
+    id: string;
+    label: string;
+    icon: LucideIcon;
+}
+
+const stages: AnalysisStage[] = [
     { id: "cloning", label: "Repositorion Kloonaus", icon: GitBranch },
     { id: "parsing", label: "Tiedostojen Jäsennys", icon: FileSearch },
     { id: "building_akg", label: "Tietämysverkon Rakennus", icon: Brain },
@@ -27,7 +49,14 @@ const stages = [
     { id: "documentation", label: "Dokumentaation Luonti", icon: FileText },
 ];
 
-export function AnalysisProgress({ events, currentProgress }: AnalysisProgressProps) {
+/**
+ * Displays the progress of the analysis.
+ *
+ * @component
+ * @param {AnalysisProgressProps} props - Component props.
+ * @returns {React.ReactElement} Reference to the rendered component.
+ */
+export function AnalysisProgress({ events, currentProgress }: AnalysisProgressProps): React.ReactElement {
     const currentStage = events[events.length - 1]?.stage || "queued";
     const currentStageIndex = stages.findIndex((s) => s.id === currentStage);
 

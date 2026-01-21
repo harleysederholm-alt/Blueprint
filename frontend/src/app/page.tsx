@@ -1,5 +1,12 @@
 "use client";
 
+/**
+ * @fileoverview Landing Page Component
+ * @module app/page
+ * @description The main landing page for RepoBlueprint AI. Displays features,
+ * pipeline steps, and allows users to start a new repository analysis.
+ */
+
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -13,24 +20,40 @@ import {
   Code2,
   Menu,
   Database,
-  ArrowRight,
   AlertCircle,
 } from "lucide-react";
 import { useAnalysisStore } from "@/stores/analysis";
 
-const FeatureCard = ({
+/**
+ * Props for the FeatureCard component.
+ */
+interface FeatureCardProps {
+  /** The icon to display. */
+  icon: React.ReactNode;
+  /** The title of the feature. */
+  title: string;
+  /** The description of the feature. */
+  desc: string;
+  /** Animation delay in seconds. */
+  delay: number;
+  /** Flex order for layout. */
+  order: number;
+}
+
+/**
+ * A card displaying a single feature with hover effects.
+ *
+ * @component
+ * @param {FeatureCardProps} props - The component props.
+ * @returns {React.ReactElement} The rendered FeatureCard component.
+ */
+const FeatureCard: React.FC<FeatureCardProps> = ({
   icon,
   title,
   desc,
   delay,
   order,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  desc: string;
-  delay: number;
-  order: number;
-}) => (
+}): React.ReactElement => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -52,17 +75,33 @@ const FeatureCard = ({
   </motion.div>
 );
 
-const PipelineStep = ({
+/**
+ * Props for the PipelineStep component.
+ */
+interface PipelineStepProps {
+  /** The step number (e.g., "01"). */
+  number: string;
+  /** The title of the step. */
+  title: string;
+  /** The description of the step. */
+  desc: string;
+  /** Animation delay in seconds. */
+  delay: number;
+}
+
+/**
+ * A card displaying a step in the analysis pipeline.
+ *
+ * @component
+ * @param {PipelineStepProps} props - The component props.
+ * @returns {React.ReactElement} The rendered PipelineStep component.
+ */
+const PipelineStep: React.FC<PipelineStepProps> = ({
   number,
   title,
   desc,
   delay,
-}: {
-  number: string;
-  title: string;
-  desc: string;
-  delay: number;
-}) => (
+}): React.ReactElement => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -83,15 +122,28 @@ const PipelineStep = ({
   </motion.div>
 );
 
-export default function LandingPage() {
+/**
+ * The main Landing Page component.
+ *
+ * Handles user input for repository URL and initiates the analysis process.
+ * Displays marketing content and pipeline steps.
+ *
+ * @component
+ * @returns {React.ReactElement} The rendered LandingPage component.
+ */
+export default function LandingPage(): React.ReactElement {
   const router = useRouter();
-  const [repoUrl, setRepoUrl] = useState("");
-  const [audience] = useState("engineer");
-  const [isLoading, setIsLoading] = useState(false);
+  const [repoUrl, setRepoUrl] = useState<string>("");
+  const [audience] = useState<string>("engineer");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { startAnalysis } = useAnalysisStore();
 
-  const handleAnalyze = async () => {
+  /**
+   * Handles the start of the analysis process.
+   * Validates input and redirects to the analysis page on success.
+   */
+  const handleAnalyze = async (): Promise<void> => {
     if (!repoUrl.trim()) return;
 
     setIsLoading(true);
@@ -102,12 +154,19 @@ export default function LandingPage() {
       router.push(`/analyze/${analysisId}`);
     } catch (error) {
       console.error("Failed to start analysis:", error);
-      setErrorMessage(error instanceof Error ? error.message : "Failed to start analysis");
+      const message = error instanceof Error ? error.message : "Failed to start analysis";
+      setErrorMessage(message);
       setIsLoading(false);
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  /**
+   * Handles key down events on the input field.
+   * Triggers analysis on Enter key.
+   *
+   * @param {React.KeyboardEvent} e - The keyboard event.
+   */
+  const handleKeyDown = (e: React.KeyboardEvent): void => {
     if (e.key === "Enter" && repoUrl.trim() && !isLoading) {
       handleAnalyze();
     }
@@ -130,6 +189,9 @@ export default function LandingPage() {
           <div
             className="flex items-center gap-3 cursor-pointer"
             onClick={() => router.push("/")}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === "Enter" && router.push("/")}
           >
             <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-600 shadow-lg shadow-indigo-500/20 ring-1 ring-white/10">
               <Code2 className="text-white w-5 h-5" />
@@ -163,7 +225,7 @@ export default function LandingPage() {
             </button>
           </nav>
 
-          <div className="md:hidden text-slate-400 p-2 hover:bg-white/5 rounded-lg pointer-events-auto">
+          <div className="md:hidden text-slate-400 p-2 hover:bg-white/5 rounded-lg pointer-events-auto cursor-pointer">
             <Menu className="w-6 h-6" />
           </div>
         </div>
