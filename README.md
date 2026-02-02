@@ -1,4 +1,4 @@
-# RepoBlueprint AI v3.0
+# RepoBlueprint AI
 
 **Arkkitehtuurimoottori** — Välitön, todisteisiin pohjautuva, suoritettava ymmärrys arkkitehtuurista.
 
