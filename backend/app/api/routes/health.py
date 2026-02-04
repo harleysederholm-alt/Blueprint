@@ -1,6 +1,11 @@
 """
-Health Check Endpoints
+Health Check Endpoints.
+
+This module provides endpoints for monitoring the application's health and
+connectivity to external services like Ollama.
 """
+
+from typing import Dict, Any
 
 import httpx
 from fastapi import APIRouter, HTTPException
@@ -12,8 +17,13 @@ settings = get_settings()
 
 
 @router.get("/health")
-async def health_check():
-    """Basic health check."""
+async def health_check() -> Dict[str, str]:
+    """
+    Basic health check endpoint.
+
+    Returns:
+        Dict[str, str]: Status and version information.
+    """
     return {
         "status": "healthy",
         "version": settings.app_version,
@@ -21,8 +31,19 @@ async def health_check():
 
 
 @router.get("/health/ollama")
-async def ollama_health_check():
-    """Check Ollama connectivity and model availability."""
+async def ollama_health_check() -> Dict[str, Any]:
+    """
+    Check Ollama connectivity and model availability.
+
+    Verifies that the Ollama service is reachable and that the configured
+    model is available for use.
+
+    Returns:
+        Dict[str, Any]: detailed status of Ollama connection.
+
+    Raises:
+        HTTPException: If connection to Ollama fails.
+    """
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             # Check if Ollama is running
